@@ -7,7 +7,7 @@ const Country = (props) => {
   }
   else{
     let country=props.filteredCountries[0]
-    // console.log(country)
+    // console.log(country)''
     return (<div>
       <h3>{country.name}</h3>
       Capital: {country.capital} <br></br>

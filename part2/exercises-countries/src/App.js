@@ -4,6 +4,7 @@ import axios from 'axios';
 import Display from './components/Display'
 
 function App() {
+  const api_key = process.env.REACT_APP_API_KEY
   const [countries,setCountries]=useState([])
   const [countryFilter, setCountryFilter]=useState('')
 
