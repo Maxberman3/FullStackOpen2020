@@ -6,7 +6,9 @@ const Countries=(props)=>{
   return (<ul>
     {
       props.filteredCountries.map(country => {
-        return <li key={country.alpha3Code}>{country.name}</li>
+        return <li key={country.alpha3Code}>{country.name}
+        <button value={country.name} onClick={props.onShowClick}>Show</button>
+        </li>
       })
     }
   </ul>)

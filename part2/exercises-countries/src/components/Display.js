@@ -6,7 +6,7 @@ const Display=(props)=>{
   // console.log('display ',props.filteredCountries)
   if(props.filteredCountries.length>1){
     return(
-      <Countries filteredCountries={props.filteredCountries}/>
+      <Countries filteredCountries={props.filteredCountries} onShowClick={props.onShowClick}/>
     )
   }
   else{

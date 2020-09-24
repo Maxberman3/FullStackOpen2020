@@ -19,12 +19,15 @@ function App() {
     setCountryFilter(event.target.value)
   }
   const filteredCountries=countries.filter(country => country.name.toLowerCase().includes(countryFilter.toLowerCase()))
+  const onShowClick=(event)=>{
+    setCountryFilter(event.target.value)
+  }
   // console.log(countries)
   // console.log(filteredCountries)
   return (<div>
     Find Countries: <input onChange={onFindCountryChange}/>
     <h2>Results</h2>
-    <Display filteredCountries={filteredCountries}/>
+    <Display filteredCountries={filteredCountries} onShowClick={onShowClick}/>
     </div>
   );
 }
