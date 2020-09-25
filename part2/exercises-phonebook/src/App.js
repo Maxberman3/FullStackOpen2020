@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Directory from './components/Directory'
 import NumberForm from './components/NumberForm'
 import axios from 'axios'
+import personService from './services/persons'
 
 const App = () => {
   const [ persons, setPersons ] = useState([])
@@ -10,11 +11,10 @@ const App = () => {
   const [nameFilter, setNameFilter]=useState('')
 
   useEffect(()=>{
-    axios
-    .get('http://localhost:3001/persons')
-    .then(response => {
-      setPersons(response.data)
-    })
+    personService.getPersons()
+  .then(allPersons=>{
+    setPersons(allPersons)
+  })
   },[])
 
   const filteredPersons=persons.filter(person=>person.name.toLowerCase().includes(nameFilter.toLowerCase()))
@@ -35,11 +35,21 @@ const App = () => {
       return person.name===newName})
     if(ret<0){
     const newPerson={ name: newName, number: newNumber}
-    setPersons(persons.concat(newPerson))
+    personService.create(newPerson)
+    .then(returnedPerson=>{
+      setPersons(persons.concat(newPerson))
+      setNewName('')
+      setNewNumber('')
+    })
   }
   else{
     window.alert(`${newName} has already been added to the phone book`)
   }
+  }
+  const onDeleteClick=(id)=>{
+    personService.deletePerson(id)
+    .then(responseData=>
+    console.log(responseData))
   }
 
   return (
@@ -48,7 +58,7 @@ const App = () => {
       <NumberForm onNameChange={onNameChange} onNumberChange={onNumberChange} onSubmit={onSubmit}/>
       <h2>Numbers</h2>
       Filter by Name: <input onChange={onFilterChange}/>
-      <Directory persons={filteredPersons}/>
+      <Directory persons={filteredPersons} onDeleteClick={}/>
     </div>
   )
 }

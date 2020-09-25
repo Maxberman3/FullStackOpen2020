@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
 import Note from './components/Note'
 import noteService from './services/notes'
 
@@ -43,6 +42,7 @@ const App = (props) => {
     : notes.filter(note => note.important)
 
     const toggleImportanceOf = id => {
+      console.log(`The importance of note ${id} needs to be toggled`)
   const note = notes.find(n => n.id === id)
   const changedNote = { ...note, important: !note.important }
 
