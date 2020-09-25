@@ -4,7 +4,7 @@ import axios from 'axios';
 import Display from './components/Display'
 
 function App() {
-  const api_key = process.env.REACT_APP_API_KEY
+  const apiKey = process.env.REACT_APP_API_KEY
   const [countries,setCountries]=useState([])
   const [countryFilter, setCountryFilter]=useState('')
 
@@ -28,7 +28,7 @@ function App() {
   return (<div>
     Find Countries: <input onChange={onFindCountryChange}/>
     <h2>Results</h2>
-    <Display filteredCountries={filteredCountries} onShowClick={onShowClick}/>
+    <Display filteredCountries={filteredCountries} onShowClick={onShowClick} apiKey={apiKey}/>
     </div>
   );
 }

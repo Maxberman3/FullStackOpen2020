@@ -1,4 +1,5 @@
 import React from 'react'
+import Weather from './Weather'
 
 const Country = (props) => {
   // console.log('Country',props.filteredCountries)
@@ -17,7 +18,9 @@ const Country = (props) => {
       {country.languages.map(language=><li key={language.iso639_2}>{language.name}</li>)}
       </ul>
       Flag: <br></br>
-      <img src={country.flag} alt={`The flag of ${country.name}`}/>
+      <img src={country.flag} alt={`The flag of ${country.name}`}/> <br></br>
+      <h5>Weather in {country.capital}</h5>
+      <Weather capital={country.capital} apiKey={props.apiKey}/>
       </div>
     )
   }

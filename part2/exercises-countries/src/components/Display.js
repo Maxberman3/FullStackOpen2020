@@ -11,7 +11,7 @@ const Display=(props)=>{
   }
   else{
     return(
-      <Country filteredCountries={props.filteredCountries}/>
+      <Country filteredCountries={props.filteredCountries} apiKey={props.apiKey}/>
     )
   }
 }
