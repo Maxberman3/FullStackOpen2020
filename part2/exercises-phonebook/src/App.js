@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react'
 import Directory from './components/Directory'
 import NumberForm from './components/NumberForm'
 import personService from './services/persons'
+import Notification from './components/Notification'
 
 const App = () => {
   const [ persons, setPersons ] = useState([])
   const [ newName, setNewName ] = useState('')
   const [newNumber,setNewNumber] = useState('')
   const [nameFilter, setNameFilter]=useState('')
+  const [notificationProps,setNotificationProps]=useState({notificationMessage:'',notificationColor:'green'})
 
   useEffect(()=>{
     personService.getPersons()
@@ -35,8 +37,18 @@ const App = () => {
       personService.create(newPerson)
       .then((returnPerson)=>{
         setPersons(persons.concat(returnPerson))
+        const submitSuccessNotification={
+          notificationMessage:`${returnPerson.name} was successfully added to the Phonebook`,
+          notificationColor:'green'
+        }
+        setNotificationProps(submitSuccessNotification,3000)
       }).catch((error)=>{
         console.log(`The request failed with the following error: ${error}`)
+        const submitFailNotification={
+          notificationMessage:`The submission to the Phonebook failed due to an internal error`,
+          notificationColor:'red'
+        }
+        setNotificationProps(submitFailNotification,3000)
       }).finally(()=>{
         resetPersonForm()
       })
@@ -57,11 +69,22 @@ const App = () => {
           const removedPerson=persons.filter(person=>person.id!==returnPerson.id)
           setPersons(removedPerson.concat(returnPerson))
         })
-        .catch((error)=>console.log(`The request failed with the following error: ${error}`))
+        .catch((error)=>{
+          console.log(`The request failed with the following error: ${error}`)
+          const submitFailNotification={
+            notificationMessage:`The submission to the Phonebook failed due to an internal error`,
+            notificationColor:'red'
+          }
+          setNotificationProps(submitFailNotification,3000)
+        })
       }
       }
       else{
-        window.alert('That name and number are already recorded in the Phonebook')
+          const submitFailNotification={
+            notificationMessage:`The submission to the Phonebook failed due to an internal error`,
+            notificationColor:'red'
+          }
+          setNotificationProps(submitFailNotification,3000)
       }
       resetPersonForm()
     }
@@ -92,6 +115,7 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
       <NumberForm name={newName} number={newNumber} onNameChange={onNameChange} onNumberChange={onNumberChange} onSubmit={onSubmit}/>
+      <Notification notificationMessage={notificationProps.notificationMessage} notificationColor={notificationProps.notificationColor}/>
       <h2>Numbers</h2>
       Filter by Name: <input onChange={onFilterChange}/>
       <Directory persons={filteredPersons} onDeleteClick={onDeleteClick}/>
