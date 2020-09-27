@@ -1,0 +1,12 @@
+{
+  "name": "course",
+  "version": "1.0.0",
+  "description": "backend notes for the Fullstack 2020 course",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Max Berman",
+  "license": "ISC"
+}
