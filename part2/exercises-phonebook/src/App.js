@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Directory from './components/Directory'
 import NumberForm from './components/NumberForm'
-import axios from 'axios'
 import personService from './services/persons'
 
 const App = () => {
@@ -30,35 +29,72 @@ const App = () => {
   }
   const onSubmit=(event)=>{
     event.preventDefault()
-    let ret=persons.findIndex((person)=>{
-      // console.log(person.name)
-      return person.name===newName})
+    let ret=persons.findIndex(person=>person.name===newName)
     if(ret<0){
-    const newPerson={ name: newName, number: newNumber}
-    personService.create(newPerson)
-    .then(returnedPerson=>{
-      setPersons(persons.concat(newPerson))
-      setNewName('')
-      setNewNumber('')
+      const newPerson={name:newName,number:newNumber}
+      personService.create(newPerson)
+      .then((returnPerson)=>{
+        setPersons(persons.concat(returnPerson))
+      }).catch((error)=>{
+        console.log(`The request failed with the following error: ${error}`)
+      }).finally(()=>{
+        resetPersonForm()
+      })
+    }
+    else{
+      let perfectMatch=persons.findIndex((person)=>{
+        return person.name===newName && person.number===newNumber})
+      // console.log(`Find index return val is : ${ret}`)
+      if(perfectMatch<0){
+      const confirm=window.confirm('That name is already recorded in the Phonebook, would you like to change the number?')
+      if(confirm){
+        // console.log(`The person being updated is ${persons[ret]}`)
+        const newPerson={...persons[ret], number:newNumber}
+        // console.log(`The new object is ${newPerson}`)
+        // console.log(newPerson.id)
+        personService.updatePerson(newPerson)
+        .then((returnPerson)=>{
+          const removedPerson=persons.filter(person=>person.id!==returnPerson.id)
+          setPersons(removedPerson.concat(returnPerson))
+        })
+        .catch((error)=>console.log(`The request failed with the following error: ${error}`))
+      }
+      }
+      else{
+        window.alert('That name and number are already recorded in the Phonebook')
+      }
+      resetPersonForm()
+    }
+  }
+  const resetPersonForm=()=>{
+    // console.log('entered resetPersonForm function')
+    setNewName('')
+    setNewNumber('')
+  }
+  const onDeleteClick=(id, name)=>{
+    // console.log(`Clicked to delete person ${id}`)
+    const confirmed=window.confirm(`Are you sure you want to delete ${name}?`)
+    if(confirmed){
+    personService.deletePerson(id)
+    .then(()=>{
+      personService.getPersons()
+      .then(allPersons=>{
+        setPersons(allPersons)
+      })
+    })
+    .catch(error=>{
+      console.log(`Error deleting: ${error}`)
     })
   }
-  else{
-    window.alert(`${newName} has already been added to the phone book`)
-  }
-  }
-  const onDeleteClick=(id)=>{
-    personService.deletePerson(id)
-    .then(responseData=>
-    console.log(responseData))
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <NumberForm onNameChange={onNameChange} onNumberChange={onNumberChange} onSubmit={onSubmit}/>
+      <NumberForm name={newName} number={newNumber} onNameChange={onNameChange} onNumberChange={onNumberChange} onSubmit={onSubmit}/>
       <h2>Numbers</h2>
       Filter by Name: <input onChange={onFilterChange}/>
-      <Directory persons={filteredPersons} onDeleteClick={}/>
+      <Directory persons={filteredPersons} onDeleteClick={onDeleteClick}/>
     </div>
   )
 }

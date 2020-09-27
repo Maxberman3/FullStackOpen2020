@@ -4,8 +4,8 @@ const NumberForm = (props) =>{
   return(
   <form>
     <div>
-      name: <input onChange={props.onNameChange}/> <br></br>
-      number: <input onChange={props.onNumberChange}/>
+      name: <input onChange={props.onNameChange} value={props.name}/> <br></br>
+      number: <input onChange={props.onNumberChange} value={props.number}/>
     </div>
     <div>
       <button type="submit" onClick={props.onSubmit}>add</button>

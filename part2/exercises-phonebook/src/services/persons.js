@@ -12,9 +12,14 @@ const getPersons = ()=>{
 }
 
 const deletePerson=(id)=>{
-  let params={id}
-  const request=axios.delete(baseUrl,params)
+  const request=axios.delete(`${baseUrl}/${id}`)
   return request.then(response=>response.data)
 }
 
-export default {create, getPersons, deletePerson}
+const updatePerson= (newPerson) => {
+  // console.log(newPerson.id)
+  const request=axios.put(`${baseUrl}/${newPerson.id}`,newPerson)
+  return request.then(response=>response.data)
+}
+
+export default {create, getPersons, deletePerson, updatePerson}
