@@ -18,7 +18,7 @@ const deletePerson=(id)=>{
 
 const updatePerson= (newPerson) => {
   // console.log(newPerson.id)
-  const request=axios.put(`${baseUrl}/${newPerson.id}`,newPerson)
+  const request=axios.put(`${baseUrl}/person/${newPerson.id}`,newPerson)
   return request.then(response=>response.data)
 }
 

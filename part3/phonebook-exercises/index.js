@@ -20,11 +20,13 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :d
   })
 
 app.get('/info',(req,res)=>{
-    const entries=Person.estimatedDocumentCount()
-    const time = new Date()
-    res.send(`<h2>There are ${entries} entries in the phonebook</h2>
-      <h2> The time when processed is ${time}</h2>
-      `)
+    Person.estimatedDocumentCount().then(count=>{
+      console.log(count)
+      const time = new Date()
+      res.send(`<h2>There are ${count} entries in the phonebook</h2>
+        <h2> The time when processed is ${time}</h2>
+        `)
+    })
 })
 
 app.get('/api/persons',(req,res)=>{
@@ -36,8 +38,12 @@ app.get('/api/persons',(req,res)=>{
 
 app.get('/api/person/:id',(req,res)=>{
   Person.findById(req.params.id).then(person=>{
-    response.json(person)
-  })
+    if(person){
+    res.json(person)
+  }else{
+    res.status(404).end()
+  }
+}).catch(error=>next(error))
 })
 
 app.delete('/api/person/:id', (req,res)=>{
@@ -46,7 +52,7 @@ app.delete('/api/person/:id', (req,res)=>{
   Person.findByIdAndDelete(id).then(result=>{
     console.log(result)
     res.status(204).end()
-  })
+  }).catch(error=>next(error))
 })
 
 app.post('/api/person/', (req,res)=>{
@@ -54,7 +60,7 @@ app.post('/api/person/', (req,res)=>{
   if(!data.name || !data.number){
     return res.status(400).json({"error":"content was missing from request"})
   }
-  let ret=Person.find({name:data.name}).then(persons=>{
+  Person.find({name:data.name}).then(persons=>{
     if(persons.length){
       return res.status(400).json({"error":"There is already an entry with that name in the phonebook"})
     }
@@ -70,6 +76,43 @@ app.post('/api/person/', (req,res)=>{
     })
   })
 })
+
+app.put('/api/person/:id',(req,res)=>{
+  const id=req.params.id
+  console.log(`processing update for person with id ${id}`)
+  const data = req.body
+  if(!data.name || !data.number){
+    return res.status(400).json({"error":"content was missing from request"})
+  }
+  const update={
+    name:data.name,
+    number:data.number,
+  }
+  Person.findByIdAndUpdate(id,update,{new:true}).then(updatePerson=>{
+    console.log(updatePerson)
+    res.json(updatePerson)
+  }).catch(error=>{
+    console.log('find by id and update is failing')
+    error=>next(error)
+  })
+})
+
+const unknownRoute = (req, res) => {
+  res.status(404).end();
+};
+
+app.use(unknownRoute);
+
+const errorHandler=(error,req,res,next)=>{
+  console.error(error.message)
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  }
+
+  next(error)
+}
+
+app.use(errorHandler)
 
 const PORT = 3001
 app.listen(PORT, () => {
