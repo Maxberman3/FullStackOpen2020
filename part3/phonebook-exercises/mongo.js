@@ -7,8 +7,7 @@ console.log(password)
 const arguments=process.argv
 
 
-const url =
-  `mongodb+srv://fullstack2020_user:${password}@cluster0.eqjly.mongodb.net/phonebook-app?retryWrites=true&w=majority`
+const url =process.env.MONGO_DB_URI
 
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true })
 
@@ -20,7 +19,6 @@ const personSchema = {
 }
 const Person=mongoose.model('Person',personSchema)
 
-console.log(arguments)
 if(arguments.length<4){
   Person.find({}).then(result=>{
     result.forEach(person=>{
@@ -32,11 +30,7 @@ if(arguments.length<4){
 }
 else{
 var name=arguments[2]
-var number=Number(arguments[3])
-if(isNaN(number)){
-  console.log('The number provided was not valid')
-  process.exit(1)
-}
+var number=arguments[3]
 
 const person=new Person({
   name:name,

@@ -14,6 +14,7 @@ const App = () => {
   useEffect(()=>{
     personService.getPersons()
   .then(allPersons=>{
+    console.log(allPersons)
     setPersons(allPersons)
   })
   },[])

@@ -1,8 +1,13 @@
 const express = require('express')
 var morgan = require('morgan')
 const app = express()
+const cors= require('cors')
+require('dotenv').config()
+const Person=require('./models/person')
 
 app.use(express.json())
+app.use(cors())
+
 morgan.token('data',(req)=>{
   let data=req.body
   return JSON.stringify(data)
@@ -10,59 +15,29 @@ morgan.token('data',(req)=>{
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :data'))
 // app.use(morgan('tiny'))
 
-let persons = [
-    {
-      "name": "Arto Hellas",
-      "number": "040-123456",
-      "id": 1
-    },
-    {
-      "name": "Ada Lovelace",
-      "number": "39-44-5323523",
-      "id": 2
-    },
-    {
-      "name": "Dan Abramov",
-      "number": "12-43-234345",
-      "id": 3
-    },
-    {
-      "name": "Mary Poppendieck",
-      "number": "39-23-6423122",
-      "id": 4
-    },
-    {
-      "name": "Councilman Tarlock",
-      "number": "123-456-8888",
-      "id": 5
-    }
-  ]
-
   app.get('/', (req, res) => {
     res.send('<h1>The phonebook app</h1>')
   })
 
 app.get('/info',(req,res)=>{
-    let entries=persons.length
-    let time = new Date()
+    const entries=Person.estimatedDocumentCount()
+    const time = new Date()
     res.send(`<h2>There are ${entries} entries in the phonebook</h2>
       <h2> The time when processed is ${time}</h2>
       `)
 })
 
 app.get('/api/persons',(req,res)=>{
-  res.send(persons)
+  Person.find({}).then(persons=>{
+    console.log(persons)
+    res.json(persons)
+  })
 })
 
 app.get('/api/person/:id',(req,res)=>{
-  const id = Number(req.params.id)
-  const ret=persons.find(person=>person.id===id)
-  if(ret){
-    res.json(ret)
-  }
-  else{
-    res.status(404).end()
-  }
+  Person.findById(req.params.id).then(person=>{
+    response.json(person)
+  })
 })
 
 app.delete('/api/person/:id', (req,res)=>{
@@ -77,20 +52,20 @@ app.post('/api/person/', (req,res)=>{
   if(!data.name || !data.number){
     return res.status(400).json({"error":"content was missing from request"})
   }
-  let ret=persons.findIndex(person=>person.name===data.name)
-  if(ret>-1){
-    return res.status(400).json({"error":"There is already an entry with that name in the phonebook"})
-  }
-  data.id=getId()
-  data.date=new Date()
-  persons=persons.concat(data)
-  // console.log(persons)
-  res.json(data)
+  let ret=persons.find({name:data.name}).then(persons=>{
+    if(persons.length){
+      return res.status(400).json({"error":"There is already an entry with that name in the phonebook"})
+    }
+    const person=new Person({
+      name:data.name,
+      number:data.number,
+      date:new Date()
+    })
+    person.save(savedPerson=>{
+      res.json(savedPerson)
+    })
+  })
 })
-
-const getId = () =>{
-  return Math.floor(Math.random()*10000)
-}
 
 const PORT = 3001
 app.listen(PORT, () => {
