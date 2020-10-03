@@ -41,10 +41,12 @@ app.get('/api/person/:id',(req,res)=>{
 })
 
 app.delete('/api/person/:id', (req,res)=>{
-  const id = Number(req.params.id)
-  persons=persons.filter(person=> person.id !== id)
-  // console.log(persons)
-  res.status(204).end()
+  const id = req.params.id
+  console.log(id)
+  Person.findByIdAndDelete(id).then(result=>{
+    console.log(result)
+    res.status(204).end()
+  })
 })
 
 app.post('/api/person/', (req,res)=>{
@@ -52,16 +54,18 @@ app.post('/api/person/', (req,res)=>{
   if(!data.name || !data.number){
     return res.status(400).json({"error":"content was missing from request"})
   }
-  let ret=persons.find({name:data.name}).then(persons=>{
+  let ret=Person.find({name:data.name}).then(persons=>{
     if(persons.length){
       return res.status(400).json({"error":"There is already an entry with that name in the phonebook"})
     }
     const person=new Person({
       name:data.name,
       number:data.number,
-      date:new Date()
+      date:new Date(),
     })
-    person.save(savedPerson=>{
+    // console.log(person)
+    person.save().then(savedPerson=>{
+      console.log(savedPerson)
       res.json(savedPerson)
     })
   })

@@ -37,6 +37,7 @@ const App = () => {
       const newPerson={name:newName,number:newNumber}
       personService.create(newPerson)
       .then((returnPerson)=>{
+        console.log(returnPerson)
         setPersons(persons.concat(returnPerson))
         const submitSuccessNotification={
           notificationMessage:`${returnPerson.name} was successfully added to the Phonebook`,
