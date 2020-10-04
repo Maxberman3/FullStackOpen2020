@@ -55,9 +55,10 @@ app.delete('/api/person/:id', (req,res)=>{
   }).catch(error=>next(error))
 })
 
-app.post('/api/person/', (req,res)=>{
+app.post('/api/person/', (req,res,next)=>{
   const data = req.body
   if(!data.name || !data.number){
+    console.log('in the missing content if statement')
     return res.status(400).json({"error":"content was missing from request"})
   }
   Person.find({name:data.name}).then(persons=>{
@@ -73,7 +74,7 @@ app.post('/api/person/', (req,res)=>{
     person.save().then(savedPerson=>{
       console.log(savedPerson)
       res.json(savedPerson)
-    })
+    }).catch(error=>next(error))
   })
 })
 
@@ -104,9 +105,14 @@ const unknownRoute = (req, res) => {
 app.use(unknownRoute);
 
 const errorHandler=(error,req,res,next)=>{
-  console.error(error.message)
+  // console.error(error.message)
   if (error.name === 'CastError') {
-    return response.status(400).send({ error: 'malformatted id' })
+    return res.status(400).send({ error: 'malformatted id' })
+  }
+  else if(error.name==='ValidationError'){
+    console.log(error.name)
+    console.log(error.message)
+    return res.status(400).json ({error:error.message})
   }
 
   next(error)

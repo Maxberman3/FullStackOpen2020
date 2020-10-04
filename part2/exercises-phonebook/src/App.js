@@ -45,9 +45,12 @@ const App = () => {
         }
         setNotificationProps(submitSuccessNotification,3000)
       }).catch((error)=>{
-        console.log(`The request failed with the following error: ${error}`)
+        // console.log(`The request failed with the following error: ${error}`)
+        // if(error.response && error.response.data){
+        //   console.log(error.response.data.error)
+        // }
         const submitFailNotification={
-          notificationMessage:`The submission to the Phonebook failed due to an internal error`,
+          notificationMessage:error.response.data.error,
           notificationColor:'red'
         }
         setNotificationProps(submitFailNotification,3000)
@@ -73,8 +76,9 @@ const App = () => {
         })
         .catch((error)=>{
           console.log(`The request failed with the following error: ${error}`)
+          console.log(error)
           const submitFailNotification={
-            notificationMessage:`The submission to the Phonebook failed due to an internal error`,
+            notificationMessage:error,
             notificationColor:'red'
           }
           setNotificationProps(submitFailNotification,3000)
@@ -83,7 +87,7 @@ const App = () => {
       }
       else{
           const submitFailNotification={
-            notificationMessage:`The submission to the Phonebook failed due to an internal error`,
+            notificationMessage:`There is already an identical match in the Phonebook`,
             notificationColor:'red'
           }
           setNotificationProps(submitFailNotification,3000)
