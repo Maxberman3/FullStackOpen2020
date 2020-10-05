@@ -34,9 +34,27 @@ const favoriteBlog = blogs =>{
   return blogs.reduce(reducer)
 }
 
+const mostLikes = blogs => {
+  const byAuthors=_.groupBy(blogs,'author')
+  // console.log(byAuthors)
+  const mostLikesByAuthor=_.reduce(byAuthors,(best,blogs,author)=>{
+    // console.log(best)
+    // console.log(author)
+    const total=totalLikes(blogs)
+    if(total>best.likes){
+      best.author=author
+      best.likes=total
+    }
+    return best
+  },
+    {author:'',likes:0})
+    return mostLikesByAuthor
+}
+
 module.exports={
   dummy,
   totalLikes,
   favoriteBlog,
   mostBlogs,
+  mostLikes,
 }
