@@ -4,10 +4,9 @@
   "description": "A practice app for blog posts",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "test": "jest --verbose",
-    "onetest":"jest --verbose -- -t "
+    "start": "NODE_ENV=production node index.js",
+    "dev": "NODE_ENV=development nodemon index.js",
+    "test": "NODE_ENV=test jest --verbose",
   },
   "author": "Max Berman",
   "license": "ISC",
