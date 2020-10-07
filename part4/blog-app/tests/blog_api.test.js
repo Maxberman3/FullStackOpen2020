@@ -68,6 +68,30 @@ test('no title or url returns 400', async()=>{
   await api.post('/api/blogs').send(newerBlog).expect(400)
 })
 
+describe('delete by id', ()=>{
+  test('verify deletion', async ()=>{
+    let allBlogs=await helper.getAllBlogs()
+    let deleteId=allBlogs[0].id
+    // console.log(`/api/blogs/${deleteId}`)
+    await api.delete(`/api/blogs/${deleteId}`).expect(204)
+    allBlogs=await helper.getAllBlogs()
+    expect(allBlogs).toHaveLength(helper.initialBlogs.length-1)
+  })
+})
+
+test('update a blog', async ()=>{
+  let allBlogs=await helper.getAllBlogs()
+  const beforeUpdate=allBlogs[0]
+  const updateBlog={...beforeUpdate, likes:beforeUpdate.likes+1}
+  // console.log(updateBlog)
+  const response = await api.put('/api/blogs').send(updateBlog).expect(200)
+  // console.log(response.body)
+  expect(response.body.likes).toEqual(beforeUpdate.likes+1)
+  allBlogs=await helper.getAllBlogs()
+  const afterUpdate=allBlogs[0]
+  expect(afterUpdate.likes).toEqual(beforeUpdate.likes+1)
+})
+
 afterAll(()=>{
   mongoose.connection.close()
 })
