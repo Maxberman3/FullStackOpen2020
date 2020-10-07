@@ -20,8 +20,8 @@ describe('when there is initially one user in db', () => {
     const usersAtStart = await helper.usersInDb()
 
     const newUser = {
-      username: 'mluukkai',
-      name: 'Matti Luukkainen',
+      username: 'seltzerMan',
+      name: 'Pellegrino',
       password: 'salainen',
     }
 
@@ -53,9 +53,54 @@ describe('when there is initially one user in db', () => {
      .expect(400)
      .expect('Content-Type', /application\/json/)
 
-   expect(result.body.error).toContain('`username` to be unique')
+   expect(result.body.error).toContain("Error, expected `username` to be unique.")
 
    const usersAtEnd = await helper.usersInDb()
    expect(usersAtEnd).toHaveLength(usersAtStart.length)
  })
+
+ test('creation fails with proper statuscode and message if password not long enough', async () =>{
+   // console.log('The test can start')
+   const usersAtStart = await helper.usersInDb()
+
+   const newUser = {
+     username: 'root2',
+     name: 'Superuser',
+     password: 'sal',
+   }
+
+   const result = await api
+     .post('/api/users')
+     .send(newUser)
+     .expect(400)
+     .expect('Content-Type', /application\/json/)
+
+   expect(result.body.error).toContain('The password was not long enough')
+
+   const usersAtEnd = await helper.usersInDb()
+   expect(usersAtEnd).toHaveLength(usersAtStart.length)
+ })
+
+ // test('creation fails with proper statuscode if username not included', async () =>{
+ //   const usersAtStart = await helper.usersInDb()
+ //
+ //   const newUser = {
+ //     name: 'Superuser',
+ //     password: 'sal',
+ //   }
+ //
+ //   const result = await api
+ //     .post('/api/users')
+ //     .send(newUser)
+ //     .expect(400)
+ //     .expect('Content-Type', /application\/json/)
+ //
+ //   const usersAtEnd = await helper.usersInDb()
+ //   expect(usersAtEnd).toHaveLength(usersAtStart.length)
+ // })
+})
+
+
+afterAll(() => {
+  mongoose.connection.close()
 })
