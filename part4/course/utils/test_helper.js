@@ -1,5 +1,4 @@
 const Note = require('../models/note')
-const helper = require('./test_helper')
 
 const initialNotes = [
   {

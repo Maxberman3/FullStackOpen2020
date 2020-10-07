@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 const supertest = require('supertest')
-const helper = require('./test_helper')
+const helper = require('../utils/test_helper')
 const app = require('../app')
 const api = supertest(app)
 const Note = require('../models/note')
@@ -17,9 +17,17 @@ beforeEach(async () => {
 
 test('notes are returned as json', async () => {
   await api
-
-expect(response.body).toHaveLength(helper.initialNotes.length)
+    .get('/api/notes')
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
 })
+
+test('all notes are returned', async () => {
+  const response = await api.get('/api/notes')
+
+  expect(response.body).toHaveLength(helper.initialNotes.length)
+})
+
 
 test('there are two notes', async () => {
   const response = await api.get('/api/notes')
