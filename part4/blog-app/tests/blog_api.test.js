@@ -37,13 +37,17 @@ test('populates user information', async ()=>{
   })
 
 test('post blog', async ()=>{
+  // console.log('entered post blog test')
+  const loginResponse=await api.post('/api/login').send({username:'root',password:'sekret'}).expect(200)
+  const {token}=loginResponse.body
+  // console.log(`This is the token after login ${token}`)
   const newBlog = {
     title: 'The importance of being earnest and also writing good unit tests',
     author: 'The AI that rules your test framework',
     url:'www.iliveinsideofyourappandeatyourcode.com',
     likes:100,
   }
-  await api.post('/api/blogs').send(newBlog).expect(201).expect('Content-Type', /application\/json/)
+  await api.post('/api/blogs').set("Authorization",`Bearer ${token}`).set("Content-Type", "application/json").send(newBlog).expect(201).expect('Content-Type', /application\/json/)
   const dbBlogs= await helper.getAllBlogs()
   // console.log(dbBlogs)
   expect(dbBlogs).toHaveLength(helper.initialBlogs.length+1)
@@ -51,38 +55,54 @@ test('post blog', async ()=>{
   expect(titles).toContain('The importance of being earnest and also writing good unit tests')
 })
 
+test('post fails when unauthorized', async ()=>{
+  const newBlog = {
+    title: 'The importance of being earnest and also writing good unit tests',
+    author: 'The AI that rules your test framework',
+    url:'www.iliveinsideofyourappandeatyourcode.com',
+    likes:100,
+  }
+  await api.post('/api/blogs').send(newBlog).expect(401)
+})
+
 test('likes defaults to 0', async()=>{
+  const loginResponse=await api.post('/api/login').send({username:'root',password:'sekret'}).expect(200)
+  const {token}=loginResponse.body
   const newBlog = {
     title: 'The importance of being earnest and also writing good unit tests',
     author: 'The AI that rules your test framework',
     url:'www.iliveinsideofyourappandeatyourcode.com',
   }
-  const response =await api.post('/api/blogs').send(newBlog).expect(201).expect('Content-Type', /application\/json/)
+  const response =await api.post('/api/blogs').set("Authorization",`Bearer ${token}`).send(newBlog).expect(201).expect('Content-Type', /application\/json/)
   // console.log(response.body)
   expect(response.body.likes).toEqual(0)
 })
 
 test('no title or url returns 400', async()=>{
+  const loginResponse=await api.post('/api/login').send({username:'root',password:'sekret'}).expect(200)
+  const {token}=loginResponse.body
   const newBlog = {
     author:'Coffee McCoffee',
     url:'www.buzzbuzzbuzz.com',
     likes:20,
   }
-  await api.post('/api/blogs').send(newBlog).expect(400)
+  await api.post('/api/blogs').set("Authorization",`Bearer ${token}`).send(newBlog).expect(400)
   const newerBlog = {
     author: 'Coffee McCoffee Jr. Jr.',
     title:'Why caffeine is responsible for 90% of the world\'s productivity',
     likes:30,
   }
-  await api.post('/api/blogs').send(newerBlog).expect(400)
+  await api.post('/api/blogs').set("Authorization",`Bearer ${token}`).send(newerBlog).expect(400)
 })
 
 describe('delete by id', ()=>{
   test('verify deletion', async ()=>{
+    const loginResponse=await api.post('/api/login').send({username:'root',password:'sekret'}).expect(200)
+    const {token}=loginResponse.body
     let allBlogs=await helper.getAllBlogs()
     let deleteId=allBlogs[0].id
     // console.log(`/api/blogs/${deleteId}`)
-    await api.delete(`/api/blogs/${deleteId}`).expect(204)
+    await api.delete(`/api/blogs/${deleteId}`).set("Authorization",`Bearer ${token}`).expect(204)
     allBlogs=await helper.getAllBlogs()
     expect(allBlogs).toHaveLength(helper.initialBlogs.length-1)
   })
