@@ -3,29 +3,38 @@ const supertest = require('supertest')
 const helper=require('../utils/test_helper')
 const app = require('../app')
 const api = supertest(app)
+const bcrypt = require('bcrypt')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 beforeEach(async () => {
+  await User.deleteMany({})
+  const passwordHash=await bcrypt.hash('sekret',10)
+  const user = new User({...helper.initialUser,passwordHash})
+  await user.save()
+
   await Blog.deleteMany({})
-  // console.log(helper.initialBlogs)
   let blogObject = new Blog(helper.initialBlogs[0])
   await blogObject.save()
 
   blogObject = new Blog(helper.initialBlogs[1])
   await blogObject.save()
 })
-
-describe('get blogs', ()=>{
-  test('returns all', async ()=>{
+test('returns all', async ()=>{
     const response = await api.get('/api/blogs')
     expect(response.body).toHaveLength(helper.initialBlogs.length)
   })
-  test('id is defined', async ()=>{
+test('id is defined', async ()=>{
     const response = await api.get('/api/blogs')
     // console.log(response.body)
     expect(response.body[0].id).toBeDefined()
   })
-})
+test('populates user information', async ()=>{
+    const response = await api.get('/api/blogs')
+    // console.log(response.body)
+    expect(response.body[0].user.username).toBeDefined()
+    expect(response.body[0].user.username).toContain('root')
+  })
 
 test('post blog', async ()=>{
   const newBlog = {

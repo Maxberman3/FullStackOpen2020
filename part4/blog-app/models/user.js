@@ -16,10 +16,10 @@ const userSchema = new mongoose.Schema({
     type:String,
     minlength:2
   },
-  blogs:{
+  blogs:[{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Blog'
-  }
+  }]
 })
 
 userSchema.plugin(uniqueValidator)
