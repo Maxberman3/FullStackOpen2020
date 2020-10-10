@@ -5,6 +5,7 @@ import loginService from './services/login'
 import Notification from './components/Notification'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
+import Togglable from './components/Togglable'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -12,9 +13,6 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [notificationProps,setNotificationProps]=useState({notificationMessage:'',notificationColor:'green'})
-  const [title,setTitle] = useState('')
-  const [author,setAuthor] = useState('')
-  const [url, setUrl] = useState('')
 
   useEffect(()=>{
     const loggedUser=window.localStorage.getItem('blogUser')
@@ -49,10 +47,9 @@ const App = () => {
     blogService.setToken(null)
     setUser(null)
   }
-  const handleBlogSubmit = async (event)=>{
-    event.preventDefault()
+  const addBlog = async (newBlog)=>{
     try{
-      const addedBlog=await blogService.createNew({author,title,url})
+      const addedBlog=await blogService.createNew(newBlog)
       setBlogs(blogs.concat(addedBlog))
       const addSuccess={notificationMessage:"New blog successfully created", notificationColor:"green"}
       setNotificationProps(addSuccess,3000)
@@ -71,7 +68,9 @@ const App = () => {
       }
       {user && (<div>
         <h3> {user.username} is logged in </h3><button onClick={handleLogout}>logout</button>
-        <BlogForm author={author} title={title} url={url} setAuthor={setAuthor} setTitle={setTitle} setUrl={setUrl} handleBlogSubmit={handleBlogSubmit}/>
+        <Togglable buttonLabel="Submit new blog">
+        <BlogForm addBlog={addBlog}/>
+        </Togglable>
         {blogs.map(blog =>
           <Blog key={blog.id} blog={blog} />
         )}
