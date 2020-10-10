@@ -7,11 +7,11 @@ loginRouter.post('/', async (request, response) => {
   const body = request.body
   // console.log(`received login request with the following info: ${body.username} ${body.password}`)
   const user = await User.findOne({ username: body.username })
-  console.log(`found user with name, ${user.username}`)
+  // console.log(`found user with name, ${user.username}`)
   const passwordCorrect = user === null
     ? false
     : await bcrypt.compare(body.password, user.passwordHash)
-    console.log(`the password comparison was ${passwordCorrect}`)
+    // console.log(`the password comparison was ${passwordCorrect}`)
   if (!(user && passwordCorrect)) {
     return response.status(401).json({
       error: 'invalid username or password'

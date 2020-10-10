@@ -37,6 +37,7 @@ const errorHandler = (error, request, response, next) => {
 
 const tokenExtractor = (request, response, next)=>{
   // console.log('token extractor processing')
+  // console.log(request.headers)
   const authorization = request.get('authorization')
   // console.log(authorization)
   if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
