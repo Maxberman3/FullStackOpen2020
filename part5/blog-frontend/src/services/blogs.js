@@ -3,7 +3,7 @@ const baseUrl = 'http://localhost:3001/api/blogs'
 
 let token = null
 
-const setToken = newToken => {
+const setToken = (newToken) => {
   token = `bearer ${newToken}`
 }
 
@@ -12,4 +12,4 @@ const getAll = () => {
   return request.then(response => response.data)
 }
 
-export default { getAll }
+export default { getAll, setToken }

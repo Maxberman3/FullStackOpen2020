@@ -20,6 +20,7 @@ mongoose.connect(config.MONGO_DB_URI, { useNewUrlParser: true, useUnifiedTopolog
 
 app.use(cors())
 app.use(express.json())
+app.use(middleware.morganLogger())
 app.use(middleware.tokenExtractor)
 
 app.use('/api/login',loginRouter)

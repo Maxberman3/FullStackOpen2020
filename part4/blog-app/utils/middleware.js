@@ -1,3 +1,20 @@
+const morgan = require('morgan')
+
+morgan.token('data',(req)=>{
+  let data=req.body
+  return JSON.stringify(data)
+})
+
+const morganLogger = () => {
+  // if (process.env.NODE_ENV === "test") {
+  //   return (req, res, next) => next();
+  // }
+
+  return morgan(
+    ":method :url :status :res[content-length] - :response-time ms :data"
+  );
+};
+
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
 }
@@ -37,5 +54,6 @@ next()
 module.exports = {
   unknownEndpoint,
   errorHandler,
-  tokenExtractor
+  tokenExtractor,
+  morganLogger
 }
