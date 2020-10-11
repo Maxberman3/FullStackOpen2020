@@ -23,9 +23,19 @@ const App = () => {
     }
   },[])
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )
+  const setInitialBlogs= async ()=>{
+    try{
+      let intialBlogs= await blogService.getAll()
+      const sortedBlogs=intialBlogs.sort((curr,next)=>{
+        return next.likes-curr.likes
+      })
+      setBlogs(sortedBlogs)
+    }catch(error){
+      const loadFail={notificationMessage:error.message,notificationColor:"red"}
+      setNotificationProps(loadFail,3000)
+    }
+  }
+  setInitialBlogs()
   }, [])
 
   const handleLogin = async (event)=>{
@@ -55,7 +65,29 @@ const App = () => {
       setNotificationProps(addSuccess,3000)
     }catch(error){
       const addFail={notificationMessage:error.message, notificationColor:"red"}
-      setNotificationProps(addFail)
+      setNotificationProps(addFail,3000)
+    }
+  }
+  const updateBlog = async (blog)=>{
+    try{
+      const updatedBlog=await blogService.updateBlog(blog)
+      const updateBlogs=blogs.filter(oldBlog=>oldBlog.id!==blog.id).concat(updatedBlog)
+      setBlogs(updateBlogs)
+    }
+    catch(error){
+      const updateFail={notificationMessage:error.message,notificationColor:"red"}
+      setNotificationProps(updateFail,3000)
+    }
+  }
+  const deleteBlog = async (id)=>{
+    try{
+      await blogService.deleteBlog(id)
+      const removeBlog=blogs.filter(blog=>blog.id!==id)
+      setBlogs(removeBlog)
+    }
+    catch(error){
+      const removeFail={notificationMessage:error.message,notificationColor:"red"}
+      setNotificationProps(removeFail,3000)
     }
   }
 
@@ -72,7 +104,7 @@ const App = () => {
         <BlogForm addBlog={addBlog}/>
         </Togglable>
         {blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} />
+          <Blog key={blog.id} blog={blog} updateBlog={updateBlog} deleteBlog={deleteBlog} user={user}/>
         )}
       </div>)}
     </div>
