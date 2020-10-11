@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-const Blog = ({ blog, updateBlog, deleteBlog,user }) => {
+const Blog = ({ blog, updateBlog, deleteBlog, user }) => {
   const [conciseBlog,setConciseBlog]=useState(true)
   const belongsToUser=user.username===blog.user.username
   const blogStyle = {
@@ -22,7 +22,7 @@ const Blog = ({ blog, updateBlog, deleteBlog,user }) => {
       likes:blog.likes+1,
       id:blog.id
     }
-    console.log(newLikes)
+    // console.log(newLikes)
     updateBlog(newLikes)
   }
   const handleRemove = (event, title, id)=>{
@@ -41,7 +41,7 @@ const Blog = ({ blog, updateBlog, deleteBlog,user }) => {
     {!conciseBlog && (<div>
       {blog.title} - {blog.author} <br></br>
       {blog.url} <br></br>
-      likes {blog.likes}  <button onClick={handleLike}>like</button> <br></br>
+      likes {blog.likes}  <button onClick={handleLike} className="likeButton">like</button> <br></br>
       {belongsToUser && <button onClick={(event)=>handleRemove(event,blog.title,blog.id)}>remove</button>}
       <button onClick={toggleConcise}> hide</button>
       </div>)}
