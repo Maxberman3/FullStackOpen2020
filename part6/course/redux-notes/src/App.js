@@ -1,17 +1,16 @@
-import React from 'react';
-import NewNote from './components/newNote.js'
-import Notes from './components/Notes.js'
-
-
+import React from 'react'
+import NewNote from './components/newNote'
+import Notes from './components/Notes'
+import VisibilityFilter from './components/visibilityFilter'
 
 const App = () => {
-
   return (
     <div>
       <NewNote />
-      <Notes  />
+      <VisibilityFilter />
+      <Notes />
     </div>
   )
 }
 
-export default App;
+export default App
