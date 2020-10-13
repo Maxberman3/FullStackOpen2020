@@ -1,7 +1,7 @@
-const filterReducer = (
-  state = "Attention: This is important information",
-  action
-) => {
+const initialState = "";
+let lastTimeout = null;
+
+const notificationReducer = (state = initialState, action) => {
   switch (action.type) {
     case "SET_NOTIFICATION":
       return action.notification;
@@ -19,11 +19,15 @@ const clearNotification = () => {
 };
 export const createNotification = (notification, timeout) => {
   return async dispatch => {
+    if (lastTimeout) {
+      clearTimeout(lastTimeout);
+    }
     dispatch({type: "SET_NOTIFICATION", notification});
-    setTimeout(() => {
+    lastTimeout = setTimeout(() => {
       dispatch(clearNotification());
+      lastTimeout = null;
     }, timeout * 1000);
   };
 };
 
-export default filterReducer;
+export default notificationReducer;
