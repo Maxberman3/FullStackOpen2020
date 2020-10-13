@@ -1,16 +1,22 @@
-import React from 'react'
-import NewNote from './components/newNote'
-import Notes from './components/Notes'
-import VisibilityFilter from './components/visibilityFilter'
+import React, {useEffect} from "react";
+import NewNote from "./components/newNote";
+import Notes from "./components/Notes";
+import VisibilityFilter from "./components/visibilityFilter";
+import {initializeNotes} from "./reducers/noteReducer";
+import {useDispatch} from "react-redux";
 
 const App = () => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(initializeNotes());
+  }, [dispatch]);
   return (
     <div>
       <NewNote />
       <VisibilityFilter />
       <Notes />
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;
