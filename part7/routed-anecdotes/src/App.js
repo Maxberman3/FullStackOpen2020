@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import {Switch, Route, useRouteMatch, Link, useHistory} from "react-router-dom";
+import {useField} from "./hooks/index";
 
 const Menu = () => {
   const padding = {
@@ -70,52 +71,47 @@ const Footer = () => (
 );
 
 const CreateNew = props => {
-  const [content, setContent] = useState("");
-  const [author, setAuthor] = useState("");
-  const [info, setInfo] = useState("");
+  const [content, resetContent] = useField("text");
+  const [author, resetAuthor] = useField("text");
+  const [info, resetInfo] = useField("text");
+  console.log(content);
   const history = useHistory();
   const handleSubmit = e => {
     e.preventDefault();
-    console.log("entered handleSubmit");
+    // console.log("entered handleSubmit");
     props.addNew({
-      content,
-      author,
-      info,
+      content: content.value,
+      author: author.value,
+      info: info.value,
       votes: 0
     });
-    props.setNotification(`You added '${content}'`);
+    props.setNotification(`You added '${content.value}'`, 3000);
     history.push("/");
+  };
+  const handleReset = () => {
+    resetContent();
+    resetAuthor();
+    resetInfo();
   };
 
   return (
     <div>
       <h2>create a new anecdote</h2>
-      <form onSubmit={handleSubmit}>
+      <form>
         <div>
           content
-          <input
-            name="content"
-            value={content}
-            onChange={e => setContent(e.target.value)}
-          />
+          <input {...content} />
         </div>
         <div>
           author
-          <input
-            name="author"
-            value={author}
-            onChange={e => setAuthor(e.target.value)}
-          />
+          <input {...author} />
         </div>
         <div>
           url for more info
-          <input
-            name="info"
-            value={info}
-            onChange={e => setInfo(e.target.value)}
-          />
+          <input {...info} />
         </div>
-        <button>create</button>
+        <button onClick={handleSubmit}>create</button>
+        <button onClick={handleReset}>reset</button>
       </form>
     </div>
   );
@@ -183,6 +179,7 @@ const App = () => {
   return (
     <div>
       <h1>Software anecdotes</h1>
+      <h3>{notification}</h3>
       <Menu />
       <Switch>
         <Route path="/about">
