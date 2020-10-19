@@ -25,20 +25,23 @@ export const FIND_PERSON = gql`
 `;
 
 export const CREATE_PERSON = gql`
-  mutation createPerson(
-    $name: String!
-    $street: String!
-    $city: String!
-    $phone: String
+  mutation addBook(
+    $title: String!
+    $author: String!
+    $published: Int!
+    $genres: [String!]!
   ) {
-    addPerson(name: $name, street: $street, city: $city, phone: $phone) {
-      name
-      phone
+    addBook(
+      title: $title
+      author: $author
+      published: $published
+      genres: $genres
+    ) {
+      title
+      author
       id
-      address {
-        street
-        city
-      }
+      published
+      genres
     }
   }
 `;

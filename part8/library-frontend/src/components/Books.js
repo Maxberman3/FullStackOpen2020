@@ -1,10 +1,10 @@
 import React from "react";
-import {ALL_AUTHORS} from "../queries";
+import {ALL_BOOKS} from "../queries";
 import {useQuery} from "@apollo/client";
 import {Table} from "react-bootstrap";
 
-const Authors = () => {
-  const result = useQuery(ALL_AUTHORS);
+const Books = () => {
+  const result = useQuery(ALL_BOOKS);
   if (result.loading) {
     return <h3>loading...</h3>;
   }
@@ -13,18 +13,18 @@ const Authors = () => {
       <Table striped bordered hover>
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Born</th>
-            <th># of Books</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Year Published</th>
           </tr>
         </thead>
         <tbody>
-          {result.data.allAuthors.map(author => {
+          {result.data.allBooks.map(book => {
             return (
-              <tr key={author.id}>
-                <td>{author.name}</td>
-                <td>{author.born}</td>
-                <td>{author.bookCount}</td>
+              <tr key={book.id}>
+                <td>{book.title}</td>
+                <td>{book.author}</td>
+                <td>{book.published}</td>
               </tr>
             );
           })}
@@ -33,4 +33,4 @@ const Authors = () => {
     </div>
   );
 };
-export default Authors;
+export default Books;
