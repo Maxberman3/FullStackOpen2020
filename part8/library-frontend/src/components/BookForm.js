@@ -1,17 +1,23 @@
 import React, {useState} from "react";
 import {useField} from "../hooks/index";
-import {ADD_BOOK} from "../queries";
+import {CREATE_BOOK, ALL_BOOKS} from "../queries";
 import {Form, Button} from "react-bootstrap";
 import {useMutation} from "@apollo/client";
 import {useHistory} from "react-router-dom";
 
-const BookForm = () => {
+const BookForm = ({setError}) => {
   const [title, resetTitle] = useField("text");
   const [author, resetAuthor] = useField("text");
   const [published, resetPublished] = useField("number");
   const [genre, resetGenre] = useField("text");
   const [genres, setGenres] = useState([]);
-  const [changeNumber] = useMutation(ADD_BOOK);
+  const [addBook] = useMutation(CREATE_BOOK, {
+    refetchQueries: [{query: ALL_BOOKS}],
+    onError: error => {
+      console.log(error.message);
+      setError(error.graphQLErrors[0].message);
+    }
+  });
   const history = useHistory();
   const resetForm = () => {
     resetTitle();
@@ -24,13 +30,13 @@ const BookForm = () => {
     setGenres(genres.concat(genre.value));
     resetGenre();
   };
-  const onSubmit = e => {
+  const onSubmit = async e => {
     e.preventDefault();
-    changeNumber({
+    await addBook({
       variables: {
         title: title.value,
         author: author.value,
-        published: published.value,
+        published: Number(published.value),
         genres: genres
       }
     });
