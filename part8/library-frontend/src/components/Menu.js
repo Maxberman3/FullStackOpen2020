@@ -10,7 +10,7 @@ const Menu = () => {
         <Nav className="mr-auto">
           <Nav.Link href="/Authors">Authors</Nav.Link>
           <Nav.Link href="/Books">Books</Nav.Link>
-          <Nav.Link href="/AddBook">Books</Nav.Link>
+          <Nav.Link href="/AddBook">Add Book</Nav.Link>
         </Nav>
       </Navbar.Collapse>
     </Navbar>

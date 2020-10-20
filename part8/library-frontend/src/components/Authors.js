@@ -2,8 +2,9 @@ import React from "react";
 import {ALL_AUTHORS} from "../queries";
 import {useQuery} from "@apollo/client";
 import {Table} from "react-bootstrap";
+import EditAuthor from "./EditAuthor";
 
-const Authors = () => {
+const Authors = setError => {
   const result = useQuery(ALL_AUTHORS);
   if (result.loading) {
     return <h3>loading...</h3>;
@@ -30,6 +31,7 @@ const Authors = () => {
           })}
         </tbody>
       </Table>
+      <EditAuthor {...setError} authors={result.data.allAuthors} />
     </div>
   );
 };
