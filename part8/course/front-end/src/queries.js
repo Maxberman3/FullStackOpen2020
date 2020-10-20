@@ -43,12 +43,15 @@ export const CREATE_PERSON = gql`
   }
 `;
 
-export const EDIT_BORN = gql`
-  mutation editBorn($name: String!, $born: Int!) {
-    editAuthor(name: $name, born: $born) {
+export const EDIT_NUMBER = gql`
+  mutation editNumber($name: String!, $phone: String!) {
+    editNumber(name: $name, phone: $phone) {
       name
-      born
-      bookcount
+      phone
+      address {
+        street
+        city
+      }
       id
     }
   }
