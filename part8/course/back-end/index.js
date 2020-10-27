@@ -1,8 +1,14 @@
 require("dotenv").config();
-const {ApolloServer, UserInputError, gql} = require("apollo-server");
+const {
+  ApolloServer,
+  AuthenticationError,
+  UserInputError,
+  gql
+} = require("apollo-server");
 const mongoose = require("mongoose");
-const Person = require("./models/person");
+const Person = require("./models/Person");
 const jwt = require("jsonwebtoken");
+const User = require("./models/User");
 
 const JWT_SECRET = "NEED_HERE_A_SECRET_KEY";
 
@@ -24,29 +30,6 @@ mongoose
     console.log("error connection to MongoDB:", error.message);
   });
 
-let persons = [
-  {
-    name: "Arto Hellas",
-    phone: "040-123543",
-    street: "Tapiolankatu 5 A",
-    city: "Espoo",
-    id: "3d594650-3436-11e9-bc57-8b80ba54c431"
-  },
-  {
-    name: "Matti Luukkainen",
-    phone: "040-432342",
-    street: "Malminkaari 10 A",
-    city: "Helsinki",
-    id: "3d599470-3436-11e9-bc57-8b80ba54c431"
-  },
-  {
-    name: "Venla Ruuska",
-    street: "Nallemäentie 22 C",
-    city: "Helsinki",
-    id: "3d599471-3436-11e9-bc57-8b80ba54c431"
-  }
-];
-
 const typeDefs = gql`
   type Address {
     street: String!
@@ -61,14 +44,14 @@ const typeDefs = gql`
   }
 
   type User {
-  username: String!
-  friends: [Person!]!
-  id: ID!
-}
+    username: String!
+    friends: [Person!]!
+    id: ID!
+  }
 
-type Token {
-  value: String!
-}
+  type Token {
+    value: String!
+  }
 
   enum YesNo {
     YES
@@ -77,39 +60,23 @@ type Token {
 
   type Query {
     personCount: Int!
-    allPersons(phone:YesNo): [Person!]!
-    findPerson(name: "Arto Hellas") {
-    phone
-    address {
-      city
-      street
-    }
+    allPersons(phone: YesNo): [Person!]!
+    findPerson(name: String!): Person
     me: User
-  }
   }
 
   type Mutation {
-  addPerson(
-    name: String!
-    phone: String
-    street: String!
-    city: String!
-  ): Person
-  editNumber(
-    name: String!
-    phone: String!
-  ): Person
-  createUser(
-    username: String!
-  ): User
-  login(
-    username: String!
-    password: String!
-  ): Token
-  addAsFriend(
-    name: String!
-  ): User
-}
+    addPerson(
+      name: String!
+      phone: String
+      street: String!
+      city: String!
+    ): Person
+    editNumber(name: String!, phone: String!): Person
+    createUser(username: String!): User
+    login(username: String!, password: String!): Token
+    addAsFriend(name: String!): User
+  }
 `;
 
 const resolvers = {
@@ -159,6 +126,7 @@ const resolvers = {
     editNumber: async (root, args) => {
       const person = await Person.findOne({name: args.name});
       person.phone = args.phone;
+
       try {
         await person.save();
       } catch (error) {
