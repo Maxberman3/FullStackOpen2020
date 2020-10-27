@@ -13,5 +13,8 @@
     "graphql": "^15.3.0",
     "mongoose": "^5.10.9",
     "mongoose-unique-validator": "^2.0.3"
+  },
+  "devDependencies": {
+    "eslint": "^7.12.1"
   }
 }
