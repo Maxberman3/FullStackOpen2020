@@ -1,7 +1,28 @@
+require("dotenv").config();
 const {ApolloServer, UserInputError, gql} = require("apollo-server");
-const {v1: uuid} = require("uuid");
-import Book from "./models/Book";
-import Author from "./models/Author";
+const Book = require("./models/Book");
+const Author = require("./models/Author");
+const mongoose = require("mongoose");
+
+// const JWT_SECRET = "NEED_HERE_A_SECRET_KEY";
+
+const MONGODB_URI = process.env.MONGO_URI;
+
+console.log("connecting to", MONGODB_URI);
+
+mongoose
+  .connect(MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+    useCreateIndex: true
+  })
+  .then(() => {
+    console.log("connected to MongoDB");
+  })
+  .catch(error => {
+    console.log("error connection to MongoDB:", error.message);
+  });
 
 const typeDefs = gql`
   type Author {
@@ -68,31 +89,23 @@ const resolvers = {
     }
   },
   Mutation: {
-    addBook: (root, args) => {
-      if (books.find(book => book.title === args.title)) {
-        throw new UserInputError("Title must be unique", {
-          invalidArgs: args.title
-        });
+    addBook: async (root, args) => {
+      const author = await Author.findOne({name: args.author});
+      if (!author) {
+        let saveAuthor = new Author({name: args.author});
+        await saveAuthor.save();
       }
-      if (!authors.find(author => author.name === args.author)) {
-        const author = {
-          name: args.author,
-          id: uuid()
-        };
-        authors = authors.concat(author);
-      }
-      const book = {...args, id: uuid()};
-      console.log(book);
-      books = books.concat(book);
-      return book;
+      const book = new Book({...args});
+      const saveBook = await book.save();
+      return saveBook;
     },
-    editAuthor: (root, args) => {
-      let author = authors.find(a => a.name === args.name);
+    editAuthor: async (root, args) => {
+      let author = await Author.findOne({name: args.name});
       if (!author) {
         return null;
       }
       author = {...author, born: args.setBornTo};
-      authors = authors.filter(a => a.name !== author.name).concat(author);
+      await author.save();
       return author;
     }
   }
