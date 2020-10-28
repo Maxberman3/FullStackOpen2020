@@ -36,6 +36,10 @@ const typeDefs = gql`
     city: String!
   }
 
+  type Token {
+    value: String!
+  }
+
   type Person {
     name: String!
     phone: String
