@@ -90,14 +90,22 @@ const resolvers = {
   },
   Mutation: {
     addBook: async (root, args) => {
+      console.log(args);
       const author = await Author.findOne({name: args.author});
+      console.log(author);
       if (!author) {
+        console.log("about to save author");
         let saveAuthor = new Author({name: args.author});
-        await saveAuthor.save();
+        saveAuthor = await saveAuthor.save();
+        const book = new Book({...args, author: saveAuthor._id});
+        const saveBook = await book.save();
+        console.log("author saved");
+        return saveBook;
+      } else {
+        const book = new Book({...args, author: author._id});
+        const saveBook = await book.save();
+        return saveBook;
       }
-      const book = new Book({...args});
-      const saveBook = await book.save();
-      return saveBook;
     },
     editAuthor: async (root, args) => {
       let author = await Author.findOne({name: args.name});
