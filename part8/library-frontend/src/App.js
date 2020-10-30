@@ -9,7 +9,7 @@ import {useApolloClient} from "@apollo/client";
 
 const App = () => {
   const client = useApolloClient();
-  const [token, setToken] = useState(null);
+  const [token, setToken] = useState(localStorage["library-user-token"]);
   const [errorMessage, setErrorMessage] = useState(null);
   const notify = message => {
     setErrorMessage(message);
@@ -31,7 +31,7 @@ const App = () => {
           <Authors />
         </Route>
         <Route path="/books">
-          <Books />
+          <Books token={token} />
         </Route>
         <Route path="/addBook">
           <BookForm setError={notify} />

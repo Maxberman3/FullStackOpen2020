@@ -82,7 +82,6 @@ const resolvers = {
     bookCount: async () => await Book.count({}),
     authorCount: async () => await Author.count({}),
     allBooks: async (root, args) => {
-      console.log("entered function");
       if (!args.author && !args.genre) {
         const books = await Book.find({});
         return books;
