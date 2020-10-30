@@ -37,6 +37,10 @@ const typeDefs = gql`
     id: ID!
   }
 
+  type Token {
+    value: String!
+  }
+
   type Author {
     name: String!
     born: Int
@@ -78,9 +82,9 @@ const resolvers = {
     bookCount: async () => await Book.count({}),
     authorCount: async () => await Author.count({}),
     allBooks: async (root, args) => {
+      console.log("entered function");
       if (!args.author && !args.genre) {
         const books = await Book.find({});
-        console.log(books);
         return books;
       }
       if (args.author && !args.genre) {
@@ -162,7 +166,11 @@ const resolvers = {
       return saveAuthor;
     },
     createUser: (root, args) => {
-      const user = new User({username: args.username});
+      console.log(args);
+      const user = new User({
+        username: args.username,
+        favoriteGenre: args.favoriteGenre
+      });
 
       return user.save().catch(error => {
         throw new UserInputError(error.message, {
@@ -171,6 +179,7 @@ const resolvers = {
       });
     },
     login: async (root, args) => {
+      console.log(args);
       const user = await User.findOne({username: args.username});
 
       if (!user || args.password !== "secred") {
